@@ -22,17 +22,17 @@ public class MedicalNoteController {
 
 
     @GetMapping("/notes")
-    public List<MedicalNoteEntity> getAllNotes() {
+    public Iterable<MedicalNoteEntity> getAllNotes() {
         logger.info("GET:/notes/");
-        List<MedicalNoteEntity> notes = medicalNoteService.getAllNotes();
+        Iterable<MedicalNoteEntity> notes = medicalNoteService.getAllNotes();
         return notes;
     }
 
-    @GetMapping("/by-patId/{patient_id}")
-    public ResponseEntity<List<MedicalNoteEntity>> getAllNotesOfPatientPatId(@PathVariable Integer patient_id) {
+    @GetMapping("/by-patientId/{patientId}")
+    public ResponseEntity<List<MedicalNoteEntity>> getAllNotesOfPatientPatId(@PathVariable Integer patientId) {
         logger.debug("getAllNotesOfPatientByPatId starts here, from MedicalNoteController");
-        List<MedicalNoteEntity> notes = medicalNoteService.getPatientAllNotesByPatientId(patient_id);
-        logger.info("All Notes of this patient with patId:{%d} have been retrieved from DB!".formatted(patient_id));
+        List<MedicalNoteEntity> notes = medicalNoteService.getPatientAllNotesByPatientId(patientId);
+        logger.info("All Notes of this patient with patId:{%d} have been retrieved from DB!".formatted(patientId));
         return ResponseEntity.ok(notes);
     }
 
@@ -40,19 +40,19 @@ public class MedicalNoteController {
     public ResponseEntity<List<MedicalNoteEntity>> getAllNotesOfPatientPatId(@PathVariable String patientLastName) {
         logger.debug("getAllNotesOfPatientByPatId starts here, from MedicalNoteController");
         List<MedicalNoteEntity> notes = medicalNoteService.getPatientAllNotesByPatientLastName(patientLastName);
-        logger.info("All Notes of this patient with patId:{%d} have been retrieved from DB!".formatted(patientLastName));
+        logger.info("All Notes of this patient with patientId:{%s} have been retrieved from DB!".formatted(patientLastName));
         return ResponseEntity.ok(notes);
     }
 
-    @PostMapping("/")
+    @PostMapping("/notes/")
     public ResponseEntity<MedicalNoteEntity> addNote(@RequestBody @Valid MedicalNoteEntity medicalNoteEntity) {
         logger.debug("addNote starts here, from NoteController");
-        MedicalNoteEntity noteSaved = medicalNoteService.saveNote(new MedicalNoteEntity(medicalNoteEntity.getId(),medicalNoteEntity.getPatient_id(), medicalNoteEntity.getPatientLastName(), medicalNoteEntity.getNote(), medicalNoteEntity.getDateTimeAtCreation()));
-        logger.info("New note with pathPatId:{} and lastName:{} has been successfully saved, from MedicalNoteController", medicalNoteEntity.getPatient_id(), medicalNoteEntity.getPatientLastName());
+        MedicalNoteEntity noteSaved = medicalNoteService.saveNote(new MedicalNoteEntity(medicalNoteEntity.getId(),medicalNoteEntity.getPatientId(), medicalNoteEntity.getPatientLastName(), medicalNoteEntity.getNote(), medicalNoteEntity.getDateTimeAtCreation()));
+        logger.info("New note with pathPatId:{} and lastName:{} has been successfully saved, from MedicalNoteController", medicalNoteEntity.getPatientId(), medicalNoteEntity.getPatientLastName());
         return new ResponseEntity<>(noteSaved, HttpStatus.CREATED);
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/notes/{id}")
     public ResponseEntity<MedicalNoteEntity> updateById(@PathVariable Integer id, @RequestBody @Valid MedicalNoteEntity medicalNote) {
         logger.debug("updateById starts here, from NoteController");
         MedicalNoteEntity noteUpdated = medicalNoteService.updateNoteById(id, medicalNote);
@@ -60,11 +60,11 @@ public class MedicalNoteController {
         return ResponseEntity.ok(noteUpdated);
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/notes/{id}")
     public ResponseEntity<HttpStatus> deleteById(@PathVariable Integer id) {
         logger.debug("deleteById starts here, from MedicalNoteController");
         try {
-            medicalNoteService.deleteById(id);
+            medicalNoteService.deleteNoteById(id);
             logger.info("Note with id:{} has been successfully deleted from MedicalNoteController", id);
             return new ResponseEntity<>(HttpStatus.OK);
         } catch (Exception e) {
@@ -73,7 +73,7 @@ public class MedicalNoteController {
         }
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/notes/{id}")
     public ResponseEntity<MedicalNoteEntity> getNoteById(@PathVariable Integer id) {
         logger.debug("getNoteById method starts here, from MedicalNoteController");
         MedicalNoteEntity noteById = medicalNoteService.getNoteById(id);
@@ -81,11 +81,11 @@ public class MedicalNoteController {
         return ResponseEntity.ok(noteById);
     }
 
-    @PostMapping("/{patId}")
-    public ResponseEntity<MedicalNoteEntity> addNoteToPatientByPatId(@PathVariable Integer patId, @RequestParam String note) {
+    @PostMapping("/notes/{patientId}")
+    public ResponseEntity<MedicalNoteEntity> addNoteToPatientByPatId(@PathVariable Integer patientId, @RequestParam String note) {
         logger.debug("addNoteToPatientByPatId starts here, from NoteController");
-        MedicalNoteEntity noteSaved = medicalNoteService.addNoteByPatient_Id(patId, note);
-        logger.info("New note with pathPatId:{} and lastName:{} has been successfully saved, from NoteController", patId, noteSaved.getPatientLastName());
+        MedicalNoteEntity noteSaved = medicalNoteService.addNoteByPatient_Id(patientId, note);
+        logger.info("New note with pathPatId:{} and lastName:{} has been successfully saved, from NoteController", patientId, noteSaved.getPatientLastName());
         return new ResponseEntity<>(noteSaved, HttpStatus.CREATED);
     }
 
