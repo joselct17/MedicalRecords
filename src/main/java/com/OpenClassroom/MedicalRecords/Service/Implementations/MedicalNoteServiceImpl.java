@@ -22,10 +22,10 @@ public class MedicalNoteServiceImpl implements IMedicalNoteService {
     @Autowired
     IMedicalNoteRepository medicalNoteRepository;
     @Override
-    public List<MedicalNoteEntity> getPatientAllNotesByPatientId(Integer patient_id) {
+    public List<MedicalNoteEntity> getPatientAllNotesByPatientId(Integer patientId) {
         logger.debug("getPatientAllNotesByPatientId starts here, from NoteServiceImpl");
-        List<MedicalNoteEntity> notes = medicalNoteRepository.findByPatientId(patient_id);
-        logger.info("AllNotes of the patient with patient_id:{} have been successfully retrieved, MedicalNoteServiceImpl", patient_id);
+        List<MedicalNoteEntity> notes = medicalNoteRepository.findByPatientId(patientId);
+        logger.info("AllNotes of the patient with patient_id:{} have been successfully retrieved, MedicalNoteServiceImpl", patientId);
         return notes;
 
     }
@@ -49,7 +49,7 @@ public class MedicalNoteServiceImpl implements IMedicalNoteService {
     }
 
     @Override
-    public void deleteById(Integer id) {
+    public void deleteNoteById(Integer id) {
         logger.debug("deleteById method starts here, from NoteServiceImpl");
         Optional<MedicalNoteEntity> noteById = medicalNoteRepository.findById(id);
 
@@ -64,9 +64,9 @@ public class MedicalNoteServiceImpl implements IMedicalNoteService {
     }
 
     @Override
-    public List<MedicalNoteEntity> getAllNotes() {
+    public Iterable<MedicalNoteEntity> getAllNotes() {
         logger.debug("getAllNotes starts here,  MedicalNoteServiceImpl");
-      List<MedicalNoteEntity> allNotes = medicalNoteRepository.findAll();
+      Iterable<MedicalNoteEntity> allNotes = medicalNoteRepository.findAll();
         logger.info("All notes have been successfully retrieved");
         return allNotes;
     }
@@ -90,7 +90,7 @@ public class MedicalNoteServiceImpl implements IMedicalNoteService {
         Optional<MedicalNoteEntity> medicalNoteById  = medicalNoteRepository.findById(id);
         if (medicalNoteById.isPresent()) {
             MedicalNoteEntity noteUpdated = medicalNoteById.get();
-            medicalNoteById.get().setPatient_id(medicalNoteEntity.getPatient_id());
+            medicalNoteById.get().setPatientId(medicalNoteEntity.getPatientId());
             medicalNoteById.get().setPatientLastName(medicalNoteEntity.getPatientLastName());
             medicalNoteById.get().setNote(medicalNoteEntity.getNote());
             medicalNoteById.get().setDateTimeAtCreation(medicalNoteEntity.getDateTimeAtCreation());
@@ -104,24 +104,24 @@ public class MedicalNoteServiceImpl implements IMedicalNoteService {
     }
 
     @Override
-    public MedicalNoteEntity addNoteByPatient_Id(Integer patient_id, String note) {
+    public MedicalNoteEntity addNoteByPatient_Id(Integer patientId, String note) {
         logger.debug("addNoteByPatId stats here, from NoteServiceImpl");
-        List<MedicalNoteEntity> notesByPatient_Id = medicalNoteRepository.findByPatientId(patient_id);
+        List<MedicalNoteEntity> notesByPatient_Id = medicalNoteRepository.findByPatientId(patientId);
 
         if (notesByPatient_Id.isEmpty()) {
-            logger.error("No notes with this patient_id:{%d}".formatted(patient_id));
-            throw new RuntimeException("No note with this patient_id:{%d}".formatted(patient_id));
+            logger.error("No notes with this patient_id:{%d}".formatted(patientId));
+            throw new RuntimeException("No note with this patient_id:{%d}".formatted(patientId));
         }
 
         MedicalNoteEntity medicalNoteNew = new MedicalNoteEntity();
-        medicalNoteNew.setPatient_id(patient_id);
+        medicalNoteNew.setPatientId(patientId);
         medicalNoteNew.setDateTimeAtCreation(LocalDateTime.now());
         medicalNoteNew.setNote(note);
         medicalNoteNew.setPatientLastName(notesByPatient_Id.get(0).getPatientLastName());
 
         MedicalNoteEntity newMedicalNoteSaved = medicalNoteRepository.save(medicalNoteNew);
 
-        logger.info("New Note has been successfully added to the Patient Id:{%d}".formatted(patient_id));
+        logger.info("New Note has been successfully added to the Patient Id:{%d}".formatted(patientId));
 
         return newMedicalNoteSaved;
     }
