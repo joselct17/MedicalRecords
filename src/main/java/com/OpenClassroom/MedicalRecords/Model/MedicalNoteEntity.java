@@ -11,7 +11,7 @@ import javax.print.attribute.standard.DateTimeAtCreation;
 import java.time.LocalDateTime;
 
 
-@Document
+@Entity
 @Getter
 @Setter
 @NoArgsConstructor
@@ -22,7 +22,7 @@ public class MedicalNoteEntity {
     @Column(name = "notes_id")
     private Integer id;
 
-    private Integer patient_id;
+    private Integer patientId;
 
     private String patientLastName;
 
@@ -33,7 +33,7 @@ public class MedicalNoteEntity {
 
     public MedicalNoteEntity(Integer id, Integer patient_id, String patientLastName, String note, LocalDateTime dateTimeAtCreation) {
         this.id = id;
-        this.patient_id = patient_id;
+        this.patientId = patientId;
         this.patientLastName = patientLastName;
         this.note = note;
         this.dateTimeAtCreation = dateTimeAtCreation;
