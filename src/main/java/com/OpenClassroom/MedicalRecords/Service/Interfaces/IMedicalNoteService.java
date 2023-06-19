@@ -1,20 +1,22 @@
 package com.OpenClassroom.MedicalRecords.Service.Interfaces;
 
 import com.OpenClassroom.MedicalRecords.Model.MedicalNoteEntity;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Service
 public interface IMedicalNoteService {
 
-    List<MedicalNoteEntity> getPatientAllNotesByPatientId(Integer id);
+    List<MedicalNoteEntity> getPatientAllNotesByPatientId(Integer patient_id);
 
     List<MedicalNoteEntity> getPatientAllNotesByPatientLastName(String patient_lastName);
 
     MedicalNoteEntity saveNote(MedicalNoteEntity medicalNoteEntity);
 
-    void deleteById(Integer id);
+    void deleteNoteById(Integer id);
 
-    List<MedicalNoteEntity> getAllNotes();
+    Iterable<MedicalNoteEntity> getAllNotes();
 
     MedicalNoteEntity getNoteById(Integer id);
 
