@@ -65,7 +65,7 @@ class NoteControllerTest {
         expectedNotes = List.of(note1, note2);
         when(medicalNoteService.getAllNotes()).thenReturn(expectedNotes);
         // When
-        mockMvc.perform(get("/notes"))
+        mockMvc.perform(get("/api/notes"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(2))
                 .andExpect(jsonPath("$[0].patientLastName", is("Jose")))
@@ -85,7 +85,7 @@ class NoteControllerTest {
         when(medicalNoteService.getPatientAllNotesByPatientId(anyInt())).thenReturn(expectedNotes);
 
         // When
-        mockMvc.perform(get("/by-patientId/{patientId}", 1L))
+        mockMvc.perform(get("/api/notes/by-patientId/{patientId}", 1))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[1].patientLastName", is("Jose")))
                 .andExpect(jsonPath("$.length()", is(2)))
@@ -105,7 +105,7 @@ class NoteControllerTest {
         when(medicalNoteService.getPatientAllNotesByPatientLastName(anyString())).thenReturn(expectedNotes);
 
         // When
-        mockMvc.perform(get("/by-lastName/{patientLastName}", "Doe"))
+        mockMvc.perform(get("/api/notes/by-lastName/{patientLastName}", "Doe"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].patientLastName", is("Doe")))
                 .andExpect(jsonPath("$.length()", is(2)))
@@ -124,7 +124,7 @@ class NoteControllerTest {
         when(medicalNoteService.saveNote(newNoteToSaved)).thenReturn(newNoteToSaved);
 
         // When
-        mockMvc.perform(post("/notes/")
+        mockMvc.perform(post("/api/notes")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(newNoteToSaved)))
                 .andExpect(status().isCreated())
@@ -145,7 +145,7 @@ class NoteControllerTest {
         when(medicalNoteService.updateNoteById(noteId, updatedNote)).thenReturn(noteUpdated);
 
         // When
-        mockMvc.perform(put("/notes/{id}", noteId)
+        mockMvc.perform(put("/api/notes/{id}", noteId)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(updatedNote)))
                 .andExpect(status().isOk())
@@ -166,7 +166,7 @@ class NoteControllerTest {
         doNothing().when(medicalNoteService).deleteNoteById(noteId);
 
         // When
-        mockMvc.perform(delete("/notes/{id}", noteId))
+        mockMvc.perform(delete("/api/notes/{id}", noteId))
                 .andExpect(status().isOk());
 
         // Then
@@ -183,7 +183,7 @@ class NoteControllerTest {
         when(medicalNoteService.getNoteById(anyInt())).thenReturn(existingNote);
 
         // when
-        mockMvc.perform(get("/notes/{id}", noteId))
+        mockMvc.perform(get("/api/notes/{id}", noteId))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.patientLastName", is("BigBoss")));
     }
@@ -203,7 +203,7 @@ class NoteControllerTest {
         when(medicalNoteService.addNoteByPatient_Id(22, newComment)).thenReturn(noteSaved);
 
         // When
-        mockMvc.perform(post("/notes/{patientId}", 22)
+        mockMvc.perform(post("/api/notes/{patientId}", 22)
                         .contentType(MediaType.APPLICATION_JSON)
                         .param("note",newComment))
                 .andExpect(status().isCreated())
