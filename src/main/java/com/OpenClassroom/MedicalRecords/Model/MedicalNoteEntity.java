@@ -11,7 +11,7 @@ import javax.print.attribute.standard.DateTimeAtCreation;
 import java.time.LocalDateTime;
 
 
-@Entity
+@Document
 @Getter
 @Setter
 @NoArgsConstructor
