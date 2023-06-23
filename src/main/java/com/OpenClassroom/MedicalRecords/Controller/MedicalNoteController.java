@@ -14,6 +14,7 @@ import java.util.List;
 
 
 @RestController
+@RequestMapping("api/notes")
 public class MedicalNoteController {
 
     @Autowired
@@ -21,7 +22,7 @@ public class MedicalNoteController {
     private final static Logger logger = LoggerFactory.getLogger(MedicalNoteController.class);
 
 
-    @GetMapping("/notes")
+    @GetMapping
     public Iterable<MedicalNoteEntity> getAllNotes() {
         logger.info("GET:/notes/");
         Iterable<MedicalNoteEntity> notes = medicalNoteService.getAllNotes();
@@ -44,23 +45,23 @@ public class MedicalNoteController {
         return ResponseEntity.ok(notes);
     }
 
-    @PostMapping("/notes/")
+    @PostMapping
     public ResponseEntity<MedicalNoteEntity> addNote(@RequestBody @Valid MedicalNoteEntity medicalNoteEntity) {
-        logger.debug("addNote starts here, from NoteController");
+        logger.debug("addNote starts here, from MedicalNoteController");
         MedicalNoteEntity noteSaved = medicalNoteService.saveNote(new MedicalNoteEntity(medicalNoteEntity.getId(),medicalNoteEntity.getPatientId(), medicalNoteEntity.getPatientLastName(), medicalNoteEntity.getNote(), medicalNoteEntity.getDateTimeAtCreation()));
         logger.info("New note with pathPatId:{} and lastName:{} has been successfully saved, from MedicalNoteController", medicalNoteEntity.getPatientId(), medicalNoteEntity.getPatientLastName());
         return new ResponseEntity<>(noteSaved, HttpStatus.CREATED);
     }
 
-    @PutMapping("/notes/{id}")
+    @PutMapping("/{id}")
     public ResponseEntity<MedicalNoteEntity> updateById(@PathVariable Integer id, @RequestBody @Valid MedicalNoteEntity medicalNote) {
-        logger.debug("updateById starts here, from NoteController");
+        logger.debug("updateById starts here, from MedicalNoteController");
         MedicalNoteEntity noteUpdated = medicalNoteService.updateNoteById(id, medicalNote);
         logger.info("Note with id:{} has been successfully updated, from MedicalNoteController", id);
         return ResponseEntity.ok(noteUpdated);
     }
 
-    @DeleteMapping("/notes/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<HttpStatus> deleteById(@PathVariable Integer id) {
         logger.debug("deleteById starts here, from MedicalNoteController");
         try {
@@ -73,7 +74,7 @@ public class MedicalNoteController {
         }
     }
 
-    @GetMapping("/notes/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<MedicalNoteEntity> getNoteById(@PathVariable Integer id) {
         logger.debug("getNoteById method starts here, from MedicalNoteController");
         MedicalNoteEntity noteById = medicalNoteService.getNoteById(id);
@@ -81,9 +82,9 @@ public class MedicalNoteController {
         return ResponseEntity.ok(noteById);
     }
 
-    @PostMapping("/notes/{patientId}")
+    @PostMapping("/{patientId}")
     public ResponseEntity<MedicalNoteEntity> addNoteToPatientByPatId(@PathVariable Integer patientId, @RequestParam String note) {
-        logger.debug("addNoteToPatientByPatId starts here, from NoteController");
+        logger.debug("addNoteToPatientByPatId starts here, from MedicalNoteController");
         MedicalNoteEntity noteSaved = medicalNoteService.addNoteByPatient_Id(patientId, note);
         logger.info("New note with pathPatId:{} and lastName:{} has been successfully saved, from NoteController", patientId, noteSaved.getPatientLastName());
         return new ResponseEntity<>(noteSaved, HttpStatus.CREATED);
