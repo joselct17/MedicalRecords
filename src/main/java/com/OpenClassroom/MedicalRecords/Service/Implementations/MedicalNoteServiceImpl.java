@@ -98,8 +98,8 @@ public class MedicalNoteServiceImpl implements IMedicalNoteService {
             logger.info("Note with id:{} doesn't exist in DB!", id);
             return noteUpdated;
         }else {
-            logger.debug("Any note doesn't exist with id:{} in DB!", id);
-            throw new RuntimeException("Any note doesn't exist with id:{%s}".formatted(id));
+            logger.debug("Any note exist with id:{} in DB!", id);
+            throw new RuntimeException("Any note  exist with id:{%s}".formatted(id));
         }
     }
 
