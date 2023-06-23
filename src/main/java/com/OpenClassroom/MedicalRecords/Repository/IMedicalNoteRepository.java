@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface IMedicalNoteRepository extends CrudRepository<MedicalNoteEntity, Integer> {
+public interface IMedicalNoteRepository extends MongoRepository<MedicalNoteEntity, Integer> {
     List<MedicalNoteEntity> findByPatientId(Integer patientId);
 
     List<MedicalNoteEntity> findByPatientLastName(String patientLastName);
