@@ -59,8 +59,8 @@ class NoteControllerTest {
     void testGetAllNotes() throws Exception {
         // Given
         List<MedicalNoteEntity> expectedNotes;
-        MedicalNoteEntity note1 = new MedicalNoteEntity(1,1, "Jose", "Comment 1", LocalDateTime.now());
-        MedicalNoteEntity note2 = new MedicalNoteEntity(2, 2, "Luis", "Comment 2", LocalDateTime.now());
+        MedicalNoteEntity note1 = new MedicalNoteEntity(1, "Jose", "Comment 1", LocalDateTime.now());
+        MedicalNoteEntity note2 = new MedicalNoteEntity( 2, "Luis", "Comment 2", LocalDateTime.now());
 
         expectedNotes = List.of(note1, note2);
         when(medicalNoteService.getAllNotes()).thenReturn(expectedNotes);
@@ -78,8 +78,8 @@ class NoteControllerTest {
     void testGetAllNotesOfPatientByPatId() throws Exception {
         // Given
         List<MedicalNoteEntity> expectedNotes;
-        MedicalNoteEntity note1 = new MedicalNoteEntity(1,2 ,"Jose", "Comment 1", LocalDateTime.now());
-        MedicalNoteEntity note2 = new MedicalNoteEntity(1,3, "Jose", "Comment 2", LocalDateTime.now());
+        MedicalNoteEntity note1 = new MedicalNoteEntity(2 ,"Jose", "Comment 1", LocalDateTime.now());
+        MedicalNoteEntity note2 = new MedicalNoteEntity(3, "Jose", "Comment 2", LocalDateTime.now());
 
         expectedNotes = List.of(note1, note2);
         when(medicalNoteService.getPatientAllNotesByPatientId(anyInt())).thenReturn(expectedNotes);
@@ -98,8 +98,8 @@ class NoteControllerTest {
     void testGetAllNotesOfPatientLastName() throws Exception {
         // Given
         List<MedicalNoteEntity> expectedNotes;
-        MedicalNoteEntity note1 = new MedicalNoteEntity(1, 2 ,"Doe", "Comment 1", LocalDateTime.now());
-        MedicalNoteEntity note2 = new MedicalNoteEntity(1, 3, "Doe", "Comment 2", LocalDateTime.now());
+        MedicalNoteEntity note1 = new MedicalNoteEntity( 2 ,"Doe", "Comment 1", LocalDateTime.now());
+        MedicalNoteEntity note2 = new MedicalNoteEntity( 3, "Doe", "Comment 2", LocalDateTime.now());
         expectedNotes = List.of(note1, note2);
 
         when(medicalNoteService.getPatientAllNotesByPatientLastName(anyString())).thenReturn(expectedNotes);
@@ -119,7 +119,7 @@ class NoteControllerTest {
     @Test
     void testAddNote() throws Exception {
         // Given
-        MedicalNoteEntity newNoteToSaved = new MedicalNoteEntity(23, 25, "Jose", "Comment 1", LocalDateTime.now());
+        MedicalNoteEntity newNoteToSaved = new MedicalNoteEntity( 25, "Jose", "Comment 1", LocalDateTime.now());
 
         when(medicalNoteService.saveNote(newNoteToSaved)).thenReturn(newNoteToSaved);
 
@@ -138,10 +138,10 @@ class NoteControllerTest {
     void testUpdateById() throws Exception {
         // Given
         Integer noteId = 3;
-        MedicalNoteEntity updatedNote = new MedicalNoteEntity(2, 3 ,"Jean", "Comment original", LocalDateTime.now());
-        updatedNote.setId(noteId);
-        MedicalNoteEntity noteUpdated = new MedicalNoteEntity(2, 3, "Jean", "Comment updated", LocalDateTime.now());
-        noteUpdated.setId(noteId);
+        MedicalNoteEntity updatedNote = new MedicalNoteEntity( 3 ,"Jean", "Comment original", LocalDateTime.now());
+        updatedNote.setPatientId(noteId);
+        MedicalNoteEntity noteUpdated = new MedicalNoteEntity( 3, "Jean", "Comment updated", LocalDateTime.now());
+        noteUpdated.setPatientId(noteId);
         when(medicalNoteService.updateNoteById(noteId, updatedNote)).thenReturn(noteUpdated);
 
         // When
@@ -160,8 +160,8 @@ class NoteControllerTest {
     void testDeleteById() throws Exception {
         // Given
         Integer noteId = 5;
-        MedicalNoteEntity existingNote = new MedicalNoteEntity(2, 3, "Joe", "Comment before", LocalDateTime.now());
-        existingNote.setId(noteId);
+        MedicalNoteEntity existingNote = new MedicalNoteEntity( 3, "Joe", "Comment before", LocalDateTime.now());
+        existingNote.setPatientId(noteId);
         when(medicalNoteService.getNoteById(anyInt())).thenReturn(existingNote);
         doNothing().when(medicalNoteService).deleteNoteById(noteId);
 
@@ -178,8 +178,8 @@ class NoteControllerTest {
     void testGetNoteById() throws Exception {
         // Given
         Integer noteId = 3;
-        MedicalNoteEntity existingNote = new MedicalNoteEntity(27, 20, "BigBoss", "Comment before", LocalDateTime.now());
-        existingNote.setId(noteId);
+        MedicalNoteEntity existingNote = new MedicalNoteEntity( 20, "BigBoss", "Comment before", LocalDateTime.now());
+        existingNote.setPatientId(noteId);
         when(medicalNoteService.getNoteById(anyInt())).thenReturn(existingNote);
 
         // when
@@ -193,12 +193,12 @@ class NoteControllerTest {
     void testAddNoteToPatientByPatId() throws Exception {
         // Given
         Integer noteId = 54;
-        MedicalNoteEntity existingNote = new MedicalNoteEntity(22,24, "Marc", "Comment before", LocalDateTime.now());
-        existingNote.setId(noteId);
+        MedicalNoteEntity existingNote = new MedicalNoteEntity(4, "Marc", "Comment before", LocalDateTime.now());
+        existingNote.setPatientId(noteId);
 
         String newComment = "Fat as a cow,";
-        MedicalNoteEntity noteSaved = new MedicalNoteEntity(22, 25, "Marc", newComment, LocalDateTime.now());
-        existingNote.setId(noteId);
+        MedicalNoteEntity noteSaved = new MedicalNoteEntity( 25, "Marc", newComment, LocalDateTime.now());
+        existingNote.setPatientId(noteId);
 
         when(medicalNoteService.addNoteByPatient_Id(22, newComment)).thenReturn(noteSaved);
 

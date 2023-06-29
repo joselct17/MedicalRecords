@@ -33,9 +33,9 @@ public class MedicalNotesServiceTest {
         // Créer des données de test
         Integer patientId = 123;
         List<MedicalNoteEntity> mockNotes = Arrays.asList(
-                new MedicalNoteEntity(1,1,"Jose","Note 1", LocalDateTime.now()),
-                new MedicalNoteEntity(1,2,"Jose","Note 2", LocalDateTime.now()),
-                new MedicalNoteEntity(1,3,"Jose","Note 3", LocalDateTime.now())
+                new MedicalNoteEntity(1,"Jose","Note 1", LocalDateTime.now()),
+                new MedicalNoteEntity(2,"Jose","Note 2", LocalDateTime.now()),
+                new MedicalNoteEntity(3,"Jose","Note 3", LocalDateTime.now())
         );
 
         // Définir le comportement du repository mock
@@ -60,9 +60,9 @@ public class MedicalNotesServiceTest {
         // Créer des données de test
         String patientLastName = "Doe";
         List<MedicalNoteEntity> mockNotes = Arrays.asList(
-                new MedicalNoteEntity(1,1,"Jose","Note 1", LocalDateTime.now()),
-                new MedicalNoteEntity(1,2,"Jose","Note 2", LocalDateTime.now()),
-                new MedicalNoteEntity(1,3,"Jose","Note 3", LocalDateTime.now())
+                new MedicalNoteEntity(1,"Jose","Note 1", LocalDateTime.now()),
+                new MedicalNoteEntity(2,"Jose","Note 2", LocalDateTime.now()),
+                new MedicalNoteEntity(3,"Jose","Note 3", LocalDateTime.now())
         );
 
         // Définir le comportement du repository mock
@@ -86,7 +86,7 @@ public class MedicalNotesServiceTest {
     public void testSaveNote() {
         // Créer une note de test
         MedicalNoteEntity mockNote = new MedicalNoteEntity();
-        mockNote.setId(1);
+        mockNote.setPatientId(1);
         mockNote.setNote("Test Note");
 
         // Définir le comportement du repository mock
@@ -109,7 +109,7 @@ public class MedicalNotesServiceTest {
 
         // Créer une note mock pour le test
         MedicalNoteEntity mockNote = new MedicalNoteEntity();
-        mockNote.setId(noteId);
+        mockNote.setPatientId(noteId);
         mockNote.setNote("Test Note");
 
         // Définir le comportement du repository mock
@@ -144,9 +144,9 @@ public class MedicalNotesServiceTest {
     public void testGetAllNotes() {
         // Créer une liste de notes de test
         List<MedicalNoteEntity> mockNotes = new ArrayList<>();
-        mockNotes.add(new MedicalNoteEntity(1, 1, "Jose", "Note 1", LocalDateTime.now()));
-        mockNotes.add(new MedicalNoteEntity(2,2, "Nina", "Note 2", LocalDateTime.now()));
-        mockNotes.add(new MedicalNoteEntity(3, 3, "Nona",  "Note 3", LocalDateTime.now()));
+        mockNotes.add(new MedicalNoteEntity( 1, "Jose", "Note 1", LocalDateTime.now()));
+        mockNotes.add(new MedicalNoteEntity(2, "Nina", "Note 2", LocalDateTime.now()));
+        mockNotes.add(new MedicalNoteEntity( 3, "Nona",  "Note 3", LocalDateTime.now()));
 
         // Définir le comportement du repository mock
         when(medicalNoteRepository.findAll()).thenReturn(mockNotes);
@@ -168,7 +168,7 @@ public class MedicalNotesServiceTest {
 
         // Créer une note mock pour le test
         MedicalNoteEntity mockNote = new MedicalNoteEntity();
-        mockNote.setId(noteId);
+        mockNote.setPatientId(noteId);
         mockNote.setNote("Test Note");
 
         // Définir le comportement du repository mock
@@ -206,7 +206,6 @@ public class MedicalNotesServiceTest {
 
         // Créer une note mock pour le test
         MedicalNoteEntity existingNote = new MedicalNoteEntity();
-        existingNote.setId(noteId);
         existingNote.setPatientId(1);
         existingNote.setPatientLastName("Doe");
         existingNote.setNote("Existing Note");
@@ -268,12 +267,12 @@ public class MedicalNotesServiceTest {
 
         // Créer une liste de notes de test pour le patient existant
         List<MedicalNoteEntity> existingNotes = new ArrayList<>();
-        existingNotes.add(new MedicalNoteEntity(1, 1, "Doe", "Note 1", LocalDateTime.now()));
-        existingNotes.add(new MedicalNoteEntity(2, 1, "Doe", "Note 2", LocalDateTime.now()));
+        existingNotes.add(new MedicalNoteEntity( 1, "Doe", "Note 1", LocalDateTime.now()));
+        existingNotes.add(new MedicalNoteEntity( 1, "Doe", "Note 2", LocalDateTime.now()));
 
         // Définir le comportement du repository mock
         when(medicalNoteRepository.findByPatientId(patientId)).thenReturn(existingNotes);
-        when(medicalNoteRepository.save(any())).thenReturn(new MedicalNoteEntity(3, 1, "Doe", "New Note", LocalDateTime.now()));
+        when(medicalNoteRepository.save(any())).thenReturn(new MedicalNoteEntity( 1, "Doe", "New Note", LocalDateTime.now()));
 
         // Appeler la méthode à tester
         MedicalNoteEntity result = noteService.addNoteByPatient_Id(patientId, "New Note");
