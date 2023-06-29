@@ -43,7 +43,7 @@ public class MedicalNoteServiceImpl implements IMedicalNoteService {
     public MedicalNoteEntity saveNote(MedicalNoteEntity medicalNoteEntity) {
         logger.debug("saveNote method starts here, from MedicalNoteServiceImpl");
         MedicalNoteEntity noteSaved = medicalNoteRepository.save(medicalNoteEntity);
-        logger.info("Note with Id:{} has been successfully save", medicalNoteEntity.getId());
+        logger.info("Note with Id:{} has been successfully save", medicalNoteEntity.getPatientId());
         return noteSaved;
 
     }
