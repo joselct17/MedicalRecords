@@ -48,7 +48,7 @@ public class MedicalNoteController {
     @PostMapping
     public ResponseEntity<MedicalNoteEntity> addNote(@RequestBody @Valid MedicalNoteEntity medicalNoteEntity) {
         logger.debug("addNote starts here, from MedicalNoteController");
-        MedicalNoteEntity noteSaved = medicalNoteService.saveNote(new MedicalNoteEntity(medicalNoteEntity.getId(),medicalNoteEntity.getPatientId(), medicalNoteEntity.getPatientLastName(), medicalNoteEntity.getNote(), medicalNoteEntity.getDateTimeAtCreation()));
+        MedicalNoteEntity noteSaved = medicalNoteService.saveNote(medicalNoteEntity);
         logger.info("New note with pathPatId:{} and lastName:{} has been successfully saved, from MedicalNoteController", medicalNoteEntity.getPatientId(), medicalNoteEntity.getPatientLastName());
         return new ResponseEntity<>(noteSaved, HttpStatus.CREATED);
     }
