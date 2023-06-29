@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 import javax.print.attribute.standard.DateTimeAtCreation;
 import java.time.LocalDateTime;
@@ -17,11 +18,8 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class MedicalNoteEntity {
 
-    @Id
-    @GeneratedValue(strategy= GenerationType.AUTO)
-    @Column(name = "notes_id")
-    private Integer id;
 
+    @Field("patientId")
     private Integer patientId;
 
     private String patientLastName;
@@ -31,8 +29,8 @@ public class MedicalNoteEntity {
     @GeneratedValue
     private LocalDateTime dateTimeAtCreation;
 
-    public MedicalNoteEntity(Integer id, Integer patient_id, String patientLastName, String note, LocalDateTime dateTimeAtCreation) {
-        this.id = id;
+    public MedicalNoteEntity(Integer patient_id, String patientLastName, String note, LocalDateTime dateTimeAtCreation) {
+
         this.patientId = patientId;
         this.patientLastName = patientLastName;
         this.note = note;
