@@ -33,7 +33,7 @@ public class MedicalNoteController {
     public ResponseEntity<List<MedicalNoteEntity>> getAllNotesOfPatientPatId(@PathVariable Integer patientId) {
         logger.debug("getAllNotesOfPatientByPatId starts here, from MedicalNoteController");
         List<MedicalNoteEntity> notes = medicalNoteService.getPatientAllNotesByPatientId(patientId);
-        logger.info("All Notes of this patient with patId:{%d} have been retrieved from DB!".formatted(patientId));
+        logger.info("All Notes of this patient with patientId:{%d} have been retrieved from DB!".formatted(patientId));
         return ResponseEntity.ok(notes);
     }
 
@@ -61,7 +61,7 @@ public class MedicalNoteController {
         return ResponseEntity.ok(noteUpdated);
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("{id}")
     public ResponseEntity<HttpStatus> deleteById(@PathVariable Integer id) {
         logger.debug("deleteById starts here, from MedicalNoteController");
         try {
@@ -70,6 +70,19 @@ public class MedicalNoteController {
             return new ResponseEntity<>(HttpStatus.OK);
         } catch (Exception e) {
             logger.error("Note with id:{} not found DB from MedicalNoteController", id);
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+    }
+
+    @DeleteMapping("/by-patientId/{patientId}")
+    public ResponseEntity<HttpStatus> deleteByPatientId(@PathVariable Integer patientId) {
+        logger.debug("deleteById starts here, from MedicalNoteController");
+        try {
+            medicalNoteService.deleteNoteByPatientId(patientId);
+            logger.info("Note with patientId:{} has been successfully deleted from MedicalNoteController", patientId);
+            return new ResponseEntity<>(HttpStatus.OK);
+        } catch (Exception e) {
+            logger.error("Note with patientId:{} not found DB from MedicalNoteController", patientId);
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
     }
