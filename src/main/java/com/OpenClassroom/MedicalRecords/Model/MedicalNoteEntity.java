@@ -18,6 +18,11 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class MedicalNoteEntity {
 
+    @Transient
+    public static final String SEQUENCE_NAME = "MedicalNoteEntity_sequence";
+
+    @Id
+    private Long id;
 
     @Field("patientId")
     private Integer patientId;
@@ -29,11 +34,12 @@ public class MedicalNoteEntity {
     @GeneratedValue
     private LocalDateTime dateTimeAtCreation;
 
-    public MedicalNoteEntity(Integer patient_id, String patientLastName, String note, LocalDateTime dateTimeAtCreation) {
-
+    public MedicalNoteEntity(Long id, Integer patientId, String patientLastName, String note, LocalDateTime dateTimeAtCreation) {
+        this.id = id;
         this.patientId = patientId;
         this.patientLastName = patientLastName;
         this.note = note;
         this.dateTimeAtCreation = dateTimeAtCreation;
     }
+
 }
