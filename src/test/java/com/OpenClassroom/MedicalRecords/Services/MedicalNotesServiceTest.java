@@ -1,9 +1,11 @@
 package com.OpenClassroom.MedicalRecords.Services;
 
 
+
 import com.OpenClassroom.MedicalRecords.Model.MedicalNoteEntity;
 import com.OpenClassroom.MedicalRecords.Repository.IMedicalNoteRepository;
 import com.OpenClassroom.MedicalRecords.Service.Implementations.MedicalNoteServiceImpl;
+import com.OpenClassroom.MedicalRecords.Service.Implementations.SequenceGeneratorService;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -15,6 +17,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
+import static java.lang.Long.valueOf;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -25,6 +28,9 @@ public class MedicalNotesServiceTest {
     @Mock
     private IMedicalNoteRepository medicalNoteRepository;
 
+    @Mock
+    private SequenceGeneratorService sequenceGeneratorService;
+
     @InjectMocks
     private MedicalNoteServiceImpl noteService;
 
@@ -33,9 +39,9 @@ public class MedicalNotesServiceTest {
         // Créer des données de test
         Integer patientId = 123;
         List<MedicalNoteEntity> mockNotes = Arrays.asList(
-                new MedicalNoteEntity(1,"Jose","Note 1", LocalDateTime.now()),
-                new MedicalNoteEntity(2,"Jose","Note 2", LocalDateTime.now()),
-                new MedicalNoteEntity(3,"Jose","Note 3", LocalDateTime.now())
+                new MedicalNoteEntity(valueOf(1),1,"Jose","Note 1", LocalDateTime.now()),
+                new MedicalNoteEntity(valueOf(2),2,"Jose","Note 2", LocalDateTime.now()),
+                new MedicalNoteEntity(valueOf(3),3,"Jose","Note 3", LocalDateTime.now())
         );
 
         // Définir le comportement du repository mock
@@ -60,9 +66,9 @@ public class MedicalNotesServiceTest {
         // Créer des données de test
         String patientLastName = "Doe";
         List<MedicalNoteEntity> mockNotes = Arrays.asList(
-                new MedicalNoteEntity(1,"Jose","Note 1", LocalDateTime.now()),
-                new MedicalNoteEntity(2,"Jose","Note 2", LocalDateTime.now()),
-                new MedicalNoteEntity(3,"Jose","Note 3", LocalDateTime.now())
+                new MedicalNoteEntity(valueOf(1),1,"Jose","Note 1", LocalDateTime.now()),
+                new MedicalNoteEntity(valueOf(2),2,"Jose","Note 2", LocalDateTime.now()),
+                new MedicalNoteEntity(valueOf(3),3,"Jose","Note 3", LocalDateTime.now())
         );
 
         // Définir le comportement du repository mock
@@ -84,22 +90,28 @@ public class MedicalNotesServiceTest {
 
     @Test
     public void testSaveNote() {
-        // Créer une note de test
-        MedicalNoteEntity mockNote = new MedicalNoteEntity();
-        mockNote.setPatientId(1);
-        mockNote.setNote("Test Note");
+        // Créer une instance de MedicalNoteEntity pour le test
+        MedicalNoteEntity medicalNoteEntity = new MedicalNoteEntity();
+        medicalNoteEntity.setPatientId(1);
+        medicalNoteEntity.setNote("This is a medical note.");
 
-        // Définir le comportement du repository mock
-        when(medicalNoteRepository.save(mockNote)).thenReturn(mockNote);
+        // Définir le comportement attendu de sequenceGeneratorService.generateSequence()
+        when(sequenceGeneratorService.generateSequence(anyString())).thenReturn(1L);
 
-        // Appeler la méthode à tester
-        MedicalNoteEntity result = noteService.saveNote(mockNote);
+        // Définir le comportement attendu de medicalNoteRepository.save()
+        when(medicalNoteRepository.save(any(MedicalNoteEntity.class))).thenReturn(medicalNoteEntity);
 
-        // Vérifier les résultats
-        assertEquals(mockNote, result);
+        // Appeler la méthode saveNote
+        MedicalNoteEntity savedNote = noteService.saveNote(medicalNoteEntity);
 
-        // Vérifier l'appel au repository
-        verify(medicalNoteRepository, times(1)).save(mockNote);
+        // Vérifier que la séquence a été générée correctement
+        verify(sequenceGeneratorService).generateSequence(medicalNoteEntity.SEQUENCE_NAME);
+
+        // Vérifier que la méthode save a été appelée sur medicalNoteRepository avec les bonnes valeurs
+        verify(medicalNoteRepository).save(medicalNoteEntity);
+
+        // Vérifier que la note retournée par la méthode saveNote est la même que celle renvoyée par medicalNoteRepository.save()
+        assertEquals(medicalNoteEntity, savedNote);
     }
 
     @Test
@@ -144,9 +156,9 @@ public class MedicalNotesServiceTest {
     public void testGetAllNotes() {
         // Créer une liste de notes de test
         List<MedicalNoteEntity> mockNotes = new ArrayList<>();
-        mockNotes.add(new MedicalNoteEntity( 1, "Jose", "Note 1", LocalDateTime.now()));
-        mockNotes.add(new MedicalNoteEntity(2, "Nina", "Note 2", LocalDateTime.now()));
-        mockNotes.add(new MedicalNoteEntity( 3, "Nona",  "Note 3", LocalDateTime.now()));
+        mockNotes.add(new MedicalNoteEntity( valueOf(1),1, "Jose", "Note 1", LocalDateTime.now()));
+        mockNotes.add(new MedicalNoteEntity(valueOf(2),2, "Nina", "Note 2", LocalDateTime.now()));
+        mockNotes.add(new MedicalNoteEntity(valueOf(3), 3, "Nona",  "Note 3", LocalDateTime.now()));
 
         // Définir le comportement du repository mock
         when(medicalNoteRepository.findAll()).thenReturn(mockNotes);
@@ -213,8 +225,8 @@ public class MedicalNotesServiceTest {
 
         // Créer une note de mise à jour de test
         MedicalNoteEntity updatedNote = new MedicalNoteEntity();
-        updatedNote.setPatientId(2);
-        updatedNote.setPatientLastName("Smith");
+        updatedNote.setPatientId(1);
+        updatedNote.setPatientLastName("Doe");
         updatedNote.setNote("Updated Note");
         updatedNote.setDateTimeAtCreation(LocalDateTime.now());
 
@@ -267,12 +279,12 @@ public class MedicalNotesServiceTest {
 
         // Créer une liste de notes de test pour le patient existant
         List<MedicalNoteEntity> existingNotes = new ArrayList<>();
-        existingNotes.add(new MedicalNoteEntity( 1, "Doe", "Note 1", LocalDateTime.now()));
-        existingNotes.add(new MedicalNoteEntity( 1, "Doe", "Note 2", LocalDateTime.now()));
+        existingNotes.add(new MedicalNoteEntity( valueOf(1),1, "Doe", "Note 1", LocalDateTime.now()));
+        existingNotes.add(new MedicalNoteEntity(valueOf(1), 1, "Doe", "Note 2", LocalDateTime.now()));
 
         // Définir le comportement du repository mock
         when(medicalNoteRepository.findByPatientId(patientId)).thenReturn(existingNotes);
-        when(medicalNoteRepository.save(any())).thenReturn(new MedicalNoteEntity( 1, "Doe", "New Note", LocalDateTime.now()));
+        when(medicalNoteRepository.save(any())).thenReturn(new MedicalNoteEntity( valueOf(1),1, "Doe", "New Note", LocalDateTime.now()));
 
         // Appeler la méthode à tester
         MedicalNoteEntity result = noteService.addNoteByPatient_Id(patientId, "New Note");
@@ -302,4 +314,42 @@ public class MedicalNotesServiceTest {
         verify(medicalNoteRepository, times(1)).findByPatientId(patientId);
         verify(medicalNoteRepository, never()).save(any());
     }
+
+
+    @Test
+    public void testDeleteNoteByPatientId() {
+        // Créer une liste de MedicalNoteEntity pour le test
+        List<MedicalNoteEntity> notes = new ArrayList<>();
+        notes.add(new MedicalNoteEntity());
+        notes.add(new MedicalNoteEntity());
+
+        // Définir le comportement attendu de medicalNoteRepository.findByPatientId()
+        when(medicalNoteRepository.findByPatientId(any(Integer.class))).thenReturn(notes);
+
+        // Appeler la méthode deleteNoteByPatientId
+        noteService.deleteNoteByPatientId(1);
+
+        // Vérifier que la méthode findByPatientId a été appelée sur medicalNoteRepository avec la bonne valeur
+        verify(medicalNoteRepository).findByPatientId(1);
+
+        // Vérifier que la méthode deleteAll a été appelée sur medicalNoteRepository avec la liste de notes
+        verify(medicalNoteRepository).deleteAll(notes);
+    }
+
+    @Test
+    public void testDeleteNoteByPatientId_NoNotesFound() {
+        // Définir le comportement attendu de medicalNoteRepository.findByPatientId() pour renvoyer une liste vide
+        when(medicalNoteRepository.findByPatientId(any(Integer.class))).thenReturn(new ArrayList<>());
+
+        // Appeler la méthode deleteNoteByPatientId et vérifier qu'une exception est lancée
+        assertThrows(RuntimeException.class, () -> noteService.deleteNoteByPatientId(1));
+
+        // Vérifier que la méthode findByPatientId a été appelée sur medicalNoteRepository avec la bonne valeur
+        verify(medicalNoteRepository).findByPatientId(1);
+
+        // Vérifier qu'il n'y a pas d'interactions supplémentaires avec medicalNoteRepository
+        verifyNoMoreInteractions(medicalNoteRepository);
+    }
+
+
 }
