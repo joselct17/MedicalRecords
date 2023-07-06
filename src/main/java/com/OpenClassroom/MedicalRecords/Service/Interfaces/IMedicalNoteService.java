@@ -16,6 +16,8 @@ public interface IMedicalNoteService {
 
     void deleteNoteById(Integer id);
 
+    void deleteNoteByPatientId(Integer patientId);
+
     Iterable<MedicalNoteEntity> getAllNotes();
 
     MedicalNoteEntity getNoteById(Integer id);
