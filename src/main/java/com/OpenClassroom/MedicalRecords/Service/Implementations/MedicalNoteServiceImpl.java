@@ -19,6 +19,9 @@ import java.util.Optional;
 public class MedicalNoteServiceImpl implements IMedicalNoteService {
 
     private Logger logger = LoggerFactory.getLogger(MedicalNoteServiceImpl.class);
+
+    @Autowired
+    SequenceGeneratorService sequenceGeneratorService;
     @Autowired
     IMedicalNoteRepository medicalNoteRepository;
     @Override
@@ -42,6 +45,7 @@ public class MedicalNoteServiceImpl implements IMedicalNoteService {
     @Override
     public MedicalNoteEntity saveNote(MedicalNoteEntity medicalNoteEntity) {
         logger.debug("saveNote method starts here, from MedicalNoteServiceImpl");
+        medicalNoteEntity.setId(sequenceGeneratorService.generateSequence(medicalNoteEntity.SEQUENCE_NAME));
         MedicalNoteEntity noteSaved = medicalNoteRepository.save(medicalNoteEntity);
         logger.info("Note with Id:{} has been successfully save", medicalNoteEntity.getPatientId());
         return noteSaved;
@@ -64,6 +68,22 @@ public class MedicalNoteServiceImpl implements IMedicalNoteService {
     }
 
     @Override
+    public void deleteNoteByPatientId(Integer patientId) {
+        logger.debug("deleteNoteByPatientId method starts here, from NoteServiceImpl");
+
+        List<MedicalNoteEntity> notes = medicalNoteRepository.findByPatientId(patientId);
+
+        if (!notes.isEmpty()) {
+            logger.info("Notes with patientId:{} have been successfully deleted", patientId);
+            medicalNoteRepository.deleteAll(notes);
+        } else {
+            logger.debug("No notes found with patientId:{}", patientId);
+            throw new RuntimeException("No notes found with patientId:" + patientId);
+        }
+}
+
+
+    @Override
     public Iterable<MedicalNoteEntity> getAllNotes() {
         logger.debug("getAllNotes starts here,  MedicalNoteServiceImpl");
       Iterable<MedicalNoteEntity> allNotes = medicalNoteRepository.findAll();
@@ -74,14 +94,12 @@ public class MedicalNoteServiceImpl implements IMedicalNoteService {
     @Override
     public MedicalNoteEntity getNoteById(Integer id) {
         logger.debug("getNoteById method starts here, MedicalNoteServiceImpl");
-        Optional<MedicalNoteEntity> medicalNoteEntityById = medicalNoteRepository.findById(id);
-        if (medicalNoteEntityById.isPresent()) {
-            logger.info("Note with id:{%s} has been not found in de data base, MedicalNoteServiceImpl");
-            return medicalNoteEntityById.get();
-        }else {
-            logger.error("Note with id:{} not found in the data base, from MedicalNoteServiceImpl", id);
-            throw new RuntimeException("Note with id:{%s} not found in DB!");
-        }
+        MedicalNoteEntity medicalNoteEntity = medicalNoteRepository.findById(id)
+                .orElseThrow(() -> {
+                    logger.error("Note with id:{} not found in the data base, from MedicalNoteServiceImpl", id);
+                    return new RuntimeException(String.format("Note with id:%d not found in DB!", id));
+                });
+        return medicalNoteEntity;
     }
 
     @Override
@@ -91,11 +109,9 @@ public class MedicalNoteServiceImpl implements IMedicalNoteService {
         if (medicalNoteById.isPresent()) {
             MedicalNoteEntity noteUpdated = medicalNoteById.get();
             medicalNoteById.get().setPatientId(medicalNoteEntity.getPatientId());
-            medicalNoteById.get().setPatientLastName(medicalNoteEntity.getPatientLastName());
             medicalNoteById.get().setNote(medicalNoteEntity.getNote());
-            medicalNoteById.get().setDateTimeAtCreation(medicalNoteEntity.getDateTimeAtCreation());
             medicalNoteRepository.save(medicalNoteById.get());
-            logger.info("Note with id:{} doesn't exist in DB!", id);
+            logger.info("Note with id:{} exist in DB!", id);
             return noteUpdated;
         }else {
             logger.debug("Any note exist with id:{} in DB!", id);
